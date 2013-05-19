@@ -31,7 +31,7 @@ exports.list = function(req, res){
 };
 
 exports.signup = function(req, res) {
-	res.render('signup', {title: "radiome"});
+	res.render('signup', {title: "soundcast"});
 };
 
 exports.addUser = function(req, res){
@@ -52,10 +52,10 @@ exports.addUser = function(req, res){
 };
 
 exports.login = function (req, res) {
-	res.render('login', {title: "radiome"});
+	res.render('login', {title: "soundcast"});
 };
 
 exports.stream = function (req, res) {
-	res.render('stream', {user: req.user, title: "radiome"});
+	res.render('stream', {user: req.user, title: "soundcast"});
 };
 

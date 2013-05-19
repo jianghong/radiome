@@ -7,28 +7,40 @@ block content
            Title Area 
         li.name
           h1
-            a(href='#')= title
+            img#small-logo(src="images/logo-small.png")
+            a(href='/')= title
       section.top-bar-section
         ul.right
           li.divider
           - if (!user)
             li.has-form
-              a.button(href='/signup') Sign Up!
+              a.button(href='#', data-reveal-id="signupModal") Sign Up!
             li.divider.show-for-small
             li.has-form
-              a.button(href='/login') Login!
+              a.button(href='#', data-reveal-id="loginModal") Login!
           - else
+            li.divider
+            li 
+              p.welcome(style="color:white;")= "Hello " + user.username + " "
             li.has-form
             a.button(href='/logout') Logout
 
   header
     .row
       .twelve.columns
-        h1.head myRADIO
-        h4.head Be your own DJ
+        img#logo(src="/images/logo.png")
+        .head-text
+          h1.head soundcast
+          h4.head Broadcast yourself
   article
+      #about-div(style="display:none;").row
+        label(style='font-size: 1.2em;') Broadcast a few words about your stream
+        input#short-about(type='text', style='font-size: 1.2em;', placeholder='About me')
+        button#broadcast Broadcast
       section.row
           #local-media-stream
+          h1#broadcast-message
+            h1
           - if (user)
             button#close-session Stop current stream
             button#open-session Start new stream
@@ -43,77 +55,115 @@ block content
           #rooms-list
           input#chat-input(type='text', style='font-size: 1.2em;', placeholder='Chat message', disabled='disabled')
           #chat-output(style='height=100px;overflow: auto;')
-        script
-          count = 0;
-          var connection = new RTCMultiConnection('only-audio-and-data', {
-          session: 'audio+data'
-          });
-          var roomsList = document.getElementById('rooms-list');
-          connection.onNewSession = function(session) {
-          console.log('New Session', session);
-          var usersession = eval ( "(" + session.userid + ")" );
-          var alreadyExists = document.getElementById(usersession.token);
-          if (alreadyExists) return;
-          if (!window.sessions) window.sessions = {};
-          window.sessions[usersession.token] = session;
-          var div = document.createElement('div');
-          div.setAttribute('class', 'connection');
-          div.innerHTML = usersession.username  +' shared a room with you.';
-          var button = document.createElement('button');
-          button.setAttribute('id', usersession.token);
-          button.innerHTML = 'Join';
-          div.appendChild(button);
-          roomsList.insertBefore(div, roomsList.firstChild);
-          button.onclick = function () {
-          var session = window.sessions[this.id];
-          connection.join(session);
-          roomsList.style.display = 'none';
-          document.getElementById('open-session').disabled = true;
-          document.getElementById('stream-header').innerHTML = "Current Streamer: " + usersession.username;
-          };
-          };
-          connection.onopen = function() {
-          if (document.getElementById('chat-input')) document.getElementById('chat-input').disabled = false;
-          if (document.getElementById('open-session')) document.getElementById('open-session').disabled = true;
-          };
-          connection.onmessage = function(data) {
-          appendDIV(data);
-          };
-          connection.onstream = function(stream) {
-          if (stream.type === 'remote') {
-          count++;
-          console.log("There are " + count + " remote listeners");
-          }
-          if (stream.type === 'local') {
-          mediaElement = stream.mediaElement;
-          document.getElementById('local-media-stream').appendChild(mediaElement);
-          mediaElement.controls = true;
-          }
-          };
-          document.getElementById('open-session').onclick = function() {
-          connection.open();
-          this.disabled = true;
-          var hash = location.hash.replace('#', '');
-          roomsList.style.display = 'none';
-          document.getElementById('open-session').disabled = true;
-          };
-          
-          var chatOutput = document.getElementById('chat-output');
-          function appendDIV(data) {
-          var div = document.createElement('div');
-          div.innerHTML = data;
-          chatOutput.insertBefore(div, chatOutput.firstChild);
-          div.tabIndex = 0;
-          }
-          document.getElementById('chat-input').onkeypress = function(e) {
-          if (e.keyCode !== 13 || !this.value) return;
-          var username = document.getElementById('data-username').innerHTML;
-          appendDIV(username + ": " + this.value);
-          connection.send(username + ": " + this.value);
-          this.value = '';
-          this.focus();
-          };
+  #signupModal.reveal-modal.modal-style.tiny
+    h1 Sign Up page
+    form(method='post', action='/addUser')
+        label Username: 
+            input(type='text', required, name='username')
+        label Password: 
+            input(type='password', required, name='password')
+        input(type='submit', value='Sign Up')
+  #loginModal.reveal-modal.modal-style.tiny
+    h1 Login Page
+    form(action='/login', method='post')
+      label Username: 
+        input(type='text', name='username')
+        label Password: 
+      input(type='password', name='password')
+      input(type='submit', value='Log in')
 
-          $("#show-list").click(function() {
-              $("#rooms-list").show();
-            })
+  footer
+    p.about-us soundcast is for people who want to share their playlist with friends
+  script
+    count = 0;
+    msg_count = 0;
+    var connection = new RTCMultiConnection('only-audio-and-data', {
+    session: 'audio+data'
+    });
+    var roomsList = document.getElementById('rooms-list');
+    connection.onNewSession = function(session) {
+    console.log('New Session', session);          
+    var usersession = eval ( "(" + session.userid + ")" );
+    var alreadyExists = document.getElementById(usersession.token);
+    if (alreadyExists) return;
+    if (!window.sessions) window.sessions = {};
+    window.sessions[usersession.token] = session;
+    var div = document.createElement('div');
+    div.setAttribute('class', 'connection');
+    div.innerHTML = usersession.username  +' is currently streaming.';
+    var button = document.createElement('button');
+    button.setAttribute('id', usersession.token);
+    button.innerHTML = 'Join';
+    div.appendChild(button);
+    roomsList.insertBefore(div, roomsList.firstChild);
+    button.onclick = function () {
+    var session = window.sessions[this.id];
+    connection.join(session);
+    roomsList.style.display = 'none';
+    document.getElementById('open-session').disabled = true;
+    document.getElementById('stream-header').innerHTML = "Current Streamer: " + usersession.username;
+    };
+    };
+    connection.onopen = function() {
+    if (document.getElementById('chat-input')) document.getElementById('chat-input').disabled = false;
+    if (document.getElementById('open-session')) document.getElementById('open-session').disabled = true;
+    };
+    connection.onmessage = function(data) {
+    appendToDIV(data[1], data[0]);
+    };
+    connection.onstream = function(stream) {
+    if (stream.type === 'remote') {
+    count++;
+    console.log("There are " + count + " remote listeners");
+    }
+    if (stream.type === 'local') {
+    mediaElement = stream.mediaElement;
+    document.getElementById('local-media-stream').appendChild(mediaElement);
+    mediaElement.controls = true;
+    }
+    };
+    document.getElementById('open-session').onclick = function() {
+    connection.open();
+    this.disabled = true;
+    var hash = location.hash.replace('#', '');
+    roomsList.style.display = 'none';
+    document.getElementById('open-session').disabled = true;
+    var about_div = document.getElementById('about-div');
+    about_div.style.display = "block";
+    };
+    
+    var chatOutput = document.getElementById('chat-output');
+    function appendToDIV(data, div) {
+    var div2 = document.createElement('div');
+    div2.innerHTML = data;
+    var insertbefore = document.getElementById(div);
+    if (div == 'broadcast-message') {
+      insertbefore.innerHTML = data;
+      }
+    else {  
+      insertbefore.insertBefore(div2, insertbefore.firstChild);
+    }
+    div2.tabIndex = 0;
+    div2.className = "text-msg"
+    }
+    document.getElementById('chat-input').onkeypress = function(e) {
+    if (e.keyCode !== 13 || !this.value) return;
+    var username = document.getElementById('data-username').innerHTML;
+    appendToDIV(username + ": " + this.value, "chat-output");
+    connection.send(['chat-output', username + ": " + this.value]);
+    this.value = '';
+    this.focus();
+    };
+
+    $("#show-list").click(function() {
+        $("#rooms-list").show();
+      })
+
+    document.getElementById('broadcast').onclick = function() {
+      var msg = document.getElementById('short-about').value;
+      connection.send(['broadcast-message', msg]);
+    }
+
+    document.getElementById('close-session').onclick = function() {
+      document.location.reload(true);
+    }

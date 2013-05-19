@@ -4,5 +4,5 @@
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: 'radiome', user: req.user });
+  res.render('index', { title: 'soundcast', user: req.user });
 };

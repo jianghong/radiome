@@ -1,6 +1,12 @@
 /* GLOBAL STYLING */
+html {
+	min-height: 100%;
+	position: relative;
+}
+
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  margin: 0 0 100px;
 }
 
 a {
@@ -21,6 +27,39 @@ audio {
 
 button {
 	float: right;
+}
+
+article {
+	min-height: 700px;
+}
+
+footer {
+	background-color: black;
+	color: white;
+	text-align: center;
+	position: absolute;
+	left: 0;
+	height: 100px;
+	width: 100%;
+}
+h1 {
+	font-size: 3.75em;
+}
+li {
+	list-style: none;
+	float: left;
+}
+
+#small-logo {
+	width: 10%;
+	float:left;
+	margin-top: 10px;
+	margin-right: 5px;
+}
+#logo {
+	float: left;
+	width: 30%;
+	margin-right: 20px;
 }
 /* NAV */
 .top-bar {
@@ -48,4 +87,34 @@ button {
 	background-color: #DDD;
 	padding: 10px;
 	overflow: hidden;
+}
+
+.about-us {
+	padding-top: 20px;
+	width: 70%;
+	margin: auto;
+}
+.text-msg {
+	margin:10px;
+	border-bottom: 1px dashed;
+}
+#image-div {
+	height: 300px;
+	width: 800px;
+	margin: auto;
+	display:none;
+}
+.bg1 {
+	background-image: url("/images/james.jpg");
+	background-repeat: no-repeat;
+}
+
+.bg2 {
+	background-image: url("/images/bg2.jpg");
+	background-repeat: no-repeat;
+}
+
+.bg3 {
+	background-image: url("/images/bg3.png");
+	background-repeat: no-repeat;
 }
