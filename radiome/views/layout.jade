@@ -1,7 +1,31 @@
 doctype 5
 html
   head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width')
     title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='css/foundation.css')
+    link(rel='stylesheet', href='/css/style.css')
+    script(src='js/vendor/custom.modernizr.js')
   body
     block content
+  script
+    document.write('<script src=' +
+    ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') +
+    '.js><\\/script>')
+  script(src='js/foundation/foundation.js')
+  script(src='js/foundation/foundation.alerts.js')
+  script(src='js/foundation/foundation.clearing.js')
+  script(src='js/foundation/foundation.cookie.js')
+  script(src='js/foundation/foundation.dropdown.js')
+  script(src='js/foundation/foundation.forms.js')
+  script(src='js/foundation/foundation.joyride.js')
+  script(src='js/foundation/foundation.magellan.js')
+  script(src='js/foundation/foundation.orbit.js')
+  script(src='js/foundation/foundation.placeholder.js')
+  script(src='js/foundation/foundation.reveal.js')
+  script(src='js/foundation/foundation.section.js')
+  script(src='js/foundation/foundation.tooltips.js')
+  script(src='js/foundation/foundation.topbar.js')
+  script
+    $(document).foundation();

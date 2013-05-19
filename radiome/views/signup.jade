@@ -1,0 +1,10 @@
+extends layout
+
+block content
+    h1 Sign Up page
+    form(method='post', action='/addUser')
+        label Username: 
+            input(type='text', required, name='username')
+        label Password: 
+            input(type='password', required, name='password')
+        input(type='submit', value='Sign Up')
