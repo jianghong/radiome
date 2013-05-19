@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html id="home" lang="en">
+
+<head>
+    <title>WebRTC one-to-many audio broadcasting ® Muaz Khan</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <style>
+        body {
+            font-family: calibri;
+            font-size: 10px;
+        }
+    </style>
+    <!-- for HTML5 el styling -->
+    <script>
+        document.createElement('article');
+        document.createElement('footer');
+    </script>
+</head>
+
+<body>
+    <article>
+    
+        <table class="visible">
+            <tr>
+                <td style="text-align: right;">
+                    <input type="text" id="conference-name" placeholder="Broadcast Name">
+                </td>
+                <td>
+                    <button id="start-conferencing">New Broadcast</button>
+                </td>
+            </tr>
+        </table>
+        <table id="rooms-list" class="visible"></table>
+
+        <table class="visible">
+            <tr>
+                <td style="text-align: center;">
+                    <h2>
+                        <strong>Private Broadcast</strong> ?? <a href="/audio-broadcast/" target="_blank" title="Open this link in new tab. Then your broadcasting room will be private!"><code>/audio-broadcast/<strong id="unique-token">#123456789</strong></code></a>
+                    </h2>
+                </td>
+            </tr>
+        </table>
+
+        <div id="participants"></div>
+
+        <script src="firebase.js"></script>
+        <script src="RTCPeerConnection-v1.5.js"></script>
+        <script src="broadcast.js"> </script>
+        <script src="broadcast-ui.js"></script>
+
+    </article>
+</body>
+</html>

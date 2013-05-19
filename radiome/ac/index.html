@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html id="home" lang="en">
+
+    <head>
+        <title>audio-conferencing + file-sharing + text-chat using RTCMultiConnection</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <style>
+            body {
+                font-family: calibri;
+                font-size: 10px;
+            }
+        </style>
+        <!-- for HTML5 el styling -->
+        <script>
+            document.createElement('article');
+            document.createElement('footer');
+        </script>
+
+        <script src="firebase.js"></script>
+		<script src="RTCMultiConnection-v1.2.js"></script>
+    </head>
+
+    <body>
+        <article>
+            <section>
+                <h2>Open New Session:</h2>
+                <button id="open-session">Open Session</button>
+            </section>
+            <table style="border-left: 1px solid black; width: 100%;">
+                <tr>
+                    <td style="width: 80%;">
+                        <h2 style="display: block; text-align: center;">Local Media Stream</h2>
+
+                        <section id="local-media-stream"></section>
+						<div id="rooms-list"></div>
+                    </td>
+                    <td style="background: white; border-left: 1px solid black;">
+                        <h2 style="display: block; font-size: 1em; text-align: center;">Text Chat</h2>
+
+                        <div id="chat-output" style="height=100px; overflow: auto;"></div>
+                        <input type="text" id="chat-input" style="font-size: 1.2em;" placeholder="chat message" disabled>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <h2 style="display: block; text-align: center;">Remote Media Streams</h2>
+                        <section id="remote-media-streams"></section>
+                    </td>
+                </tr>
+            </table>
+            <script>
+                count = 0;
+
+                var connection = new RTCMultiConnection('only-audio-and-data', {
+					session: 'audio+data'
+				});
+				
+				var roomsList = document.getElementById('rooms-list');
+
+				connection.onNewSession = function(session) {
+					console.log('New Session', session);
+					
+					var alreadyExists = document.getElementById(session.userid);
+					if (alreadyExists) return;
+
+					if (!window.sessions) window.sessions = {};
+					window.sessions[session.userid] = session;
+
+                    var div = document.createElement('div');
+                    div.setAttribute('class', 'connection');
+
+                    div.innerHTML = session.userid  +' shared a room with you.</td>';
+
+                    var button = document.createElement('button');
+                    button.setAttribute('id', session.userid);
+                    button.innerHTML = 'Join';
+
+                    div.appendChild(button);
+                    roomsList.insertBefore(div, roomsList.firstChild);
+
+					button.onclick = function () {
+						var session = window.sessions[this.id];
+						connection.join(session);
+						roomsList.style.display = 'none';
+						document.getElementById('open-session').disabled = true;
+					};
+				};
+                connection.onopen = function() {
+                    if (document.getElementById('chat-input')) document.getElementById('chat-input').disabled = false;
+                    if (document.getElementById('open-session')) document.getElementById('open-session').disabled = true;
+                };
+
+                connection.onmessage = function(data) {
+                    appendDIV(data);
+                };
+
+                connection.onstream = function(stream) {
+                    if (stream.type === 'remote') {
+                        count++;
+                        console.log("There are " + count + " remote listeners");
+/*                        var mediaElement = stream.mediaElement;
+                        if (stream.direction !== RTCDirection.OneWay) {
+                            var remoteMediaStreams = document.getElementById('remote-media-streams');
+                            remoteMediaStreams.insertBefore(mediaElement, remoteMediaStreams.firstChild);
+                        } else document.getElementById('local-media-stream').appendChild(mediaElement);
+                        mediaElement.controls = true;*/
+                    }
+
+                    if (stream.type === 'local') {
+                        mediaElement = stream.mediaElement;
+                        alert("adding local stream");
+                        document.getElementById('local-media-stream').appendChild(mediaElement);
+                        mediaElement.controls = true;
+                    }
+                };
+
+                document.getElementById('open-session').onclick = function() {
+                    connection.open();
+
+                    this.disabled = true;
+                    var hash = location.hash.replace('#', '');
+                    roomsList.style.display = 'none';
+					document.getElementById('open-session').disabled = true;
+                };
+
+                var chatOutput = document.getElementById('chat-output');
+
+                function appendDIV(data) {
+                    var div = document.createElement('div');
+                    div.innerHTML = data;
+                    chatOutput.insertBefore(div, chatOutput.firstChild);
+                    div.tabIndex = 0;
+                    div.focus();
+                }
+
+                document.getElementById('chat-input').onkeypress = function(e) {
+                    if (e.keyCode !== 13 || !this.value) return;
+                    appendDIV(this.value);
+                    connection.send(this.value);
+                    this.value = '';
+                    this.focus();
+                };
+            </script>
+    </body>
+</html>
