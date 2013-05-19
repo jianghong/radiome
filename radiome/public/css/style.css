@@ -1,8 +1,51 @@
+/* GLOBAL STYLING */
 body {
-  padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: #00B7FF;
+}
+
+header {
+	background-color: #2ba6cb;
+}
+
+.head {
+	color: white;
+}
+
+audio {
+	width: 100%;
+}
+
+button {
+	float: right;
+}
+/* NAV */
+.top-bar {
+	margin-bottom: 0;
+}
+
+.row {
+	padding: 50px;
+}
+
+/* BUTTONS */
+
+.button {
+	background: #2ba6cb;
+}
+
+/* CONTENT */
+
+#local-media-stream {
+	margin: 20px;
+}
+
+
+.connection {
+	background-color: #DDD;
+	padding: 10px;
+	overflow: hidden;
 }

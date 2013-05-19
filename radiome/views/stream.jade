@@ -1,0 +1,60 @@
+extends layout
+
+block content
+  nav.top-bar
+    ul.title-area
+        //
+           Title Area 
+        li.name
+          h1
+            a(href='#')= title
+      section.top-bar-section
+        ul.right
+          li.divider
+          - if (!user)
+            li.has-form
+              a.button(href='/signup') Sign Up!
+            li.divider.show-for-small
+            li.has-form
+              a.button(href='/login') Login!
+          - else
+            li.has-form
+            a.button(href='/logout') Logout
+
+  header
+    .row
+      .twelve.columns
+        h1 myRADIO
+        h4 Be your own DJ
+  .row
+    h2 Open New Session:
+    a(href='/stream/').button#open-session Open Session
+    #rooms-list
+
+  script
+    count = 0;
+      var connection = new RTCMultiConnection('only-audio-and-data', {
+      session: 'audio+data'
+      });
+      var roomsList = document.getElementById('rooms-list');
+      connection.onNewSession = function(session) {
+      console.log('New Session', session);
+      var alreadyExists = document.getElementById(session.userid);
+      if (alreadyExists) return;
+      if (!window.sessions) window.sessions = {};
+      window.sessions[session.userid] = session;
+      var div = document.createElement('div');
+      div.setAttribute('class', 'connection');
+      div.innerHTML = session.userid  +' shared a room with you.';
+      var button = document.createElement('button');
+      button.setAttribute('id', session.userid);
+      button.innerHTML = 'Join';
+      div.appendChild(button);
+      roomsList.insertBefore(div, roomsList.firstChild);
+      button.onclick = function () {
+      var session = window.sessions[this.id];
+      connection.join(session);
+      roomsList.style.display = 'none';
+      document.getElementById('open-session').disabled = true;
+      };
+      };

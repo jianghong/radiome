@@ -45,7 +45,7 @@ exports.addUser = function(req, res){
 		else {
 			req.login(newUser, function (err) {
 				if (err) res.send('FAIL');
-				res.redirect('/stream');
+				res.redirect('/');
 			});
 		}
 	});
@@ -56,6 +56,6 @@ exports.login = function (req, res) {
 };
 
 exports.stream = function (req, res) {
-	res.render('stream', {user: req.user});
+	res.render('stream', {user: req.user, title: "radiome"});
 };
 

@@ -101,12 +101,6 @@
                     if (stream.type === 'remote') {
                         count++;
                         console.log("There are " + count + " remote listeners");
-/*                        var mediaElement = stream.mediaElement;
-                        if (stream.direction !== RTCDirection.OneWay) {
-                            var remoteMediaStreams = document.getElementById('remote-media-streams');
-                            remoteMediaStreams.insertBefore(mediaElement, remoteMediaStreams.firstChild);
-                        } else document.getElementById('local-media-stream').appendChild(mediaElement);
-                        mediaElement.controls = true;*/
                     }
 
                     if (stream.type === 'local') {

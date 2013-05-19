@@ -1,11 +1,111 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
-  - if (!user)
-    a(href='/signup') Sign up
-    br
-    a(href='/login') Log In
-  - else
-    h1= user.username 
+  nav.top-bar
+    ul.title-area
+        //
+           Title Area 
+        li.name
+          h1
+            a(href='#')= title
+      section.top-bar-section
+        ul.right
+          li.divider
+          - if (!user)
+            li.has-form
+              a.button(href='/signup') Sign Up!
+            li.divider.show-for-small
+            li.has-form
+              a.button(href='/login') Login!
+          - else
+            li.has-form
+            a.button(href='/logout') Logout
+
+  header
+    .row
+      .twelve.columns
+        h1.head myRADIO
+        h4.head Be your own DJ
+  article
+      section.row
+          #local-media-stream
+          - if (user)
+            button#open-session Start Streaming
+          - else
+            button(disabled)#open-session Start Streaming
+          br
+          h3 Available Streams: 
+          #rooms-list
+          input#chat-input(type='text', style='font-size: 1.2em;', placeholder='chat message', disabled='disabled')
+          #chat-output(style='height=100px;overflow: auto;')
+        script
+          count = 0;
+          var connection = new RTCMultiConnection('only-audio-and-data', {
+          session: 'audio+data'
+          });
+          var roomsList = document.getElementById('rooms-list');
+          connection.onNewSession = function(session) {
+          console.log('New Session', session);
+          var alreadyExists = document.getElementById(session.userid);
+          if (alreadyExists) return;
+          if (!window.sessions) window.sessions = {};
+          window.sessions[session.userid] = session;
+          var div = document.createElement('div');
+          div.setAttribute('class', 'connection');
+          div.innerHTML = session.userid  +' shared a room with you.';
+          var button = document.createElement('button');
+          button.setAttribute('id', session.userid);
+          button.innerHTML = 'Join';
+          div.appendChild(button);
+          roomsList.insertBefore(div, roomsList.firstChild);
+          button.onclick = function () {
+          var session = window.sessions[this.id];
+          connection.join(session);
+          roomsList.style.display = 'none';
+          document.getElementById('open-session').disabled = true;
+          };
+          };
+          connection.onopen = function() {
+          if (document.getElementById('chat-input')) document.getElementById('chat-input').disabled = false;
+          if (document.getElementById('open-session')) document.getElementById('open-session').disabled = true;
+          };
+          connection.onmessage = function(data) {
+          appendDIV(data);
+          };
+          connection.onstream = function(stream) {
+          if (stream.type === 'remote') {
+          count++;
+          console.log("There are " + count + " remote listeners");
+          }
+          if (stream.type === 'local') {
+          mediaElement = stream.mediaElement;
+          document.getElementById('local-media-stream').appendChild(mediaElement);
+          mediaElement.controls = true;
+          }
+          };
+          document.getElementById('open-session').onclick = function() {
+          connection.open();
+          this.disabled = true;
+          var hash = location.hash.replace('#', '');
+          roomsList.style.display = 'none';
+          document.getElementById('open-session').disabled = true;
+          };
+          var chatOutput = document.getElementById('chat-output');
+          function appendDIV(data) {
+          var div = document.createElement('div');
+          div.innerHTML = data;
+          chatOutput.insertBefore(div, chatOutput.firstChild);
+          div.tabIndex = 0;
+          div.focus();
+          }
+          document.getElementById('chat-input').onkeypress = function(e) {
+          if (e.keyCode !== 13 || !this.value) return;
+          appendDIV(this.value);
+          connection.send(this.value);
+          this.value = '';
+          this.focus();
+          };
+
+          $("#show-list").click(function() {
+              $("#rooms-list").show();
+            })
