@@ -30,13 +30,18 @@ block content
       section.row
           #local-media-stream
           - if (user)
-            button#open-session Start Streaming
+            button#close-session Stop current stream
+            button#open-session Start new stream
           - else
-            button(disabled)#open-session Start Streaming
+            button(disabled)#open-session Start new stream
           br
-          h3 Available Streams: 
+          - if (user)
+            p(id="data-username", style="display:none;")=  user.username
+          - else
+            p(id="data-username", style="display:none;") Anon
+          h3#stream-header Available Streams: 
           #rooms-list
-          input#chat-input(type='text', style='font-size: 1.2em;', placeholder='chat message', disabled='disabled')
+          input#chat-input(type='text', style='font-size: 1.2em;', placeholder='Chat message', disabled='disabled')
           #chat-output(style='height=100px;overflow: auto;')
         script
           count = 0;
@@ -46,15 +51,16 @@ block content
           var roomsList = document.getElementById('rooms-list');
           connection.onNewSession = function(session) {
           console.log('New Session', session);
-          var alreadyExists = document.getElementById(session.userid);
+          var usersession = eval ( "(" + session.userid + ")" );
+          var alreadyExists = document.getElementById(usersession.token);
           if (alreadyExists) return;
           if (!window.sessions) window.sessions = {};
-          window.sessions[session.userid] = session;
+          window.sessions[usersession.token] = session;
           var div = document.createElement('div');
           div.setAttribute('class', 'connection');
-          div.innerHTML = session.userid  +' shared a room with you.';
+          div.innerHTML = usersession.username  +' shared a room with you.';
           var button = document.createElement('button');
-          button.setAttribute('id', session.userid);
+          button.setAttribute('id', usersession.token);
           button.innerHTML = 'Join';
           div.appendChild(button);
           roomsList.insertBefore(div, roomsList.firstChild);
@@ -63,6 +69,7 @@ block content
           connection.join(session);
           roomsList.style.display = 'none';
           document.getElementById('open-session').disabled = true;
+          document.getElementById('stream-header').innerHTML = "Current Streamer: "
           };
           };
           connection.onopen = function() {
@@ -90,18 +97,19 @@ block content
           roomsList.style.display = 'none';
           document.getElementById('open-session').disabled = true;
           };
+          
           var chatOutput = document.getElementById('chat-output');
           function appendDIV(data) {
           var div = document.createElement('div');
           div.innerHTML = data;
           chatOutput.insertBefore(div, chatOutput.firstChild);
           div.tabIndex = 0;
-          div.focus();
           }
           document.getElementById('chat-input').onkeypress = function(e) {
           if (e.keyCode !== 13 || !this.value) return;
-          appendDIV(this.value);
-          connection.send(this.value);
+          var username = document.getElementById('data-username').innerHTML;
+          appendDIV(username + ": " + this.value);
+          connection.send(username + ": " + this.value);
           this.value = '';
           this.focus();
           };

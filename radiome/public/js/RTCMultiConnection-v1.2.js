@@ -143,13 +143,13 @@
 
             self.session = session.session;
             self.direction = session.direction;
-
+            console.log("Direction: " + session.direction);
             if (session.direction === Direction.OneWay || session.session === Session.Data)
                 rtcSession.joinSession(session, extra || {});
-            else
-                captureUserMedia(function () {
+            // else
+            //     captureUserMedia(function () {
                     rtcSession.joinSession(session, extra || {});
-                });
+            //     });
         }
 
         self.join = joinSession;
@@ -364,8 +364,8 @@
             url: !moz ? 'stun:stun.l.google.com:19302' : 'stun:23.21.150.121'
         };
         var TURN = {
-            url: 'turn:webrtc%40live.com@numb.viagenie.ca',
-            credential: 'muazkh'
+            url: 'turn:android.dhiman%40gmail.com@numb.viagenie.ca',
+            credential: 'karandhiman'
         };
         var iceServers = {
             iceServers: options.iceServers || [STUN]
@@ -915,7 +915,13 @@
         }
 
         function uniqueToken() {
-            return (Math.random() * new Date().getTime()).toString(36).toUpperCase().replace(/\./g, '-');
+            var username = document.getElementById('data-username').innerHTML;
+            var result = {
+                username: username,
+                token: (Math.random() * new Date().getTime()).toString(36).toUpperCase().replace(/\./g, '-')
+            };
+
+            return JSON.stringify(result);
         }
 
         function leaveARoom(channel) {

@@ -138,12 +138,12 @@
         }
 
         function joinSession(session, extra) {
-            if (!session || !session.userid || !session.sessionid)
+            if (!session || !session.userid || !session.sessionid)ß
                 throw 'invalid data passed.';
 
             self.session = session.session;
             self.direction = session.direction;
-
+            console.log("Direction:" session.direction);
             if (session.direction === Direction.OneWay || session.session === Session.Data)
                 rtcSession.joinSession(session, extra || {});
             else
