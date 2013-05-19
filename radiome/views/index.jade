@@ -69,7 +69,7 @@ block content
           connection.join(session);
           roomsList.style.display = 'none';
           document.getElementById('open-session').disabled = true;
-          document.getElementById('stream-header').innerHTML = "Current Streamer: "
+          document.getElementById('stream-header').innerHTML = "Current Streamer: " + usersession.username;
           };
           };
           connection.onopen = function() {
